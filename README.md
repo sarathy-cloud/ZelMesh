@@ -71,12 +71,6 @@ The app runs through a pipeline in the background so the UI stays responsive:
 
 ---
 
-## 🤔 If it's taking forever or freezing
-Try these in order:
-1. Decimate your mesh below 100k triangles first.
-2. Increase the Scale Factor (bigger quads = much less work for the solver).
-3. Lower the Time Limit in Advanced Settings.
-
 The ILP solver is fundamentally sequential — it's a graph optimization problem, not something you can throw GPU cores at. This isn't a bug, it's just the nature of the algorithm.
 
 ---
