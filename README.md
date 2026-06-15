@@ -1,114 +1,85 @@
-# QRemeshify Standalone GUI
+# ZelMesh Standalone GUI
 
-A standalone, lightweight Python GUI for **QRemeshify** (QuadWild / QuadPatches) that runs high-quality quad-remeshing **without needing Blender**. 
+ksami built the QRemeshify Blender extension, which wraps the QuadWild and QuadPatches algorithms from the original academic researchers into something usable inside Blender. It's genuinely good work. This app is just a wrapper around that same pipeline — the credit for anything that actually matters belongs to them.
 
-**Why a Standalone Version?** Normally, the QRemeshify extension runs inside Blender's internal Python environment. However, the heavy ILP solvers often cause Blender to hang or crash due to memory constraints, GIL contention, and threading issues. This standalone app built with [CustomTkinter](https://customtkinter.tomschimansky.com/) directly wraps the native C++ libraries using `ctypes` and runs in your **system Python environment**, making it vastly more stable and completely preventing Blender from hanging.
+So — if you've been using that extension and Blender keeps hanging, freezing, or dying mid-remesh, that's exactly why this exists.
 
----
+### Why not just use the Blender extension?
+The extension works fine for simple meshes, but the ILP solver it uses is a heavy C++ process. When you run that inside Blender's Python environment, you're fighting against Blender's memory management, the GIL, and threading constraints all at once. On anything moderately complex, Blender just gives up.
 
-## ✨ Features
-- **No Blender Required:** Runs entirely standalone as a desktop application.
-- **Direct Library Access:** Calls `lib_quadwild` and `lib_quadpatches` directly for maximum performance and stability.
-- **Advanced Parameter Control:** Exposes all advanced ILP quadrangulation settings (Time Limit, Gap Limit, Regulators, Weights, Isometry, etc.).
-- **Quad Preservation:** Saves output directly to `.obj` to maintain genuine quad faces (unlike `.stl` which forcibly triangulates them).
-- **Asynchronous Execution:** Runs the heavy remeshing pipeline in a background thread, keeping the GUI responsive and providing progress logs.
+Running it standalone in your system Python sidesteps all of that. Same algorithm, same output quality — just actually stable.
 
 ---
 
-## ⚙️ Requirements & Installation
+## ⚠️ Before you download
+**Don't clone the repo.** The source code on main doesn't include the compiled C++ binaries, so it won't run. You need to grab the pre-packaged release ZIP for your OS from GitHub Releases or Gumroad.
 
-**⚠️ IMPORTANT: Do NOT download the source code from the `main` branch.** The raw source code on `main` does not contain the compiled C++ binaries. 
+---
 
-Instead, you must download the pre-packaged release ZIP for your specific Operating System.
+## 🚀 Getting started
 
-### Step 1: Download the Release ZIP
-Download the correct release file for your OS (e.g., `QRemeshify-1.1.0-windows.zip`, `...linux.zip`, or `...mac.zip`) from:
-- [GitHub Releases](https://github.com/ksami/QRemeshify/releases)
-- or [Gumroad](https://ksami.gumroad.com/l/QRemeshify)
+### 1. Download the right ZIP for your OS
+Look for something like `QRemeshify-1.1.0-windows.zip` (or `-linux`, `-mac`).
 
-### Step 2: Extract the Files
-Extract the downloaded ZIP. Inside, you will find the `app.py` script alongside the pre-compiled native binaries (`lib_quadwild` and `lib_quadpatches`) already placed correctly in the `QRemeshify/lib/` folder.
-
-Your extracted folder structure will look roughly like this:
-
+### 2. Extract it
+The folder structure inside will look like this:
 ```text
 QRemeshify-1.1.0-windows/
-├── app.py                      ← The main GUI script
+├── app.py
 ├── QRemeshify/
 │   └── lib/
-│       ├── lib_quadwild.dll    ← Native binary (already included!)
-│       ├── lib_quadpatches.dll ← Native binary (already included!)
-│       └── config/             ← Required config folders
+│       ├── lib_quadwild.dll
+│       ├── lib_quadpatches.dll
+│       └── config/
 │           ├── main_config/
 │           └── satsuma/
 └── README.md
 ```
+The `.dll` files (or `.so` on Linux) are already there — you don't need to build anything.
 
-### Step 3: Install Python Dependencies
-Ensure you have Python 3.8+ installed. Open a terminal or command prompt in the extracted folder and install the required Python packages:
+### 3. Install the Python dependencies
+You'll need Python 3.8 or newer. Then, in the extracted folder:
 ```bash
 pip install customtkinter trimesh scipy
 ```
 
----
-
-## 🚀 Usage
-
-Run the GUI via command line:
+### 4. Run it
 ```bash
 python app.py
 ```
 
-### Pipeline Overview
-When you click **Remesh**, the app runs the following pipeline behind the scenes:
-1. **Conversion:** STL → Triangulated OBJ conversion (via `trimesh`).
-2. **QuadWild:** Initial remeshing and cross-field calculation.
-3. **QuadWild:** Patch tracing.
-4. **QuadPatches:** Quadrangulation using the ILP solver.
-5. **Output:** Saving the result as a quad-preserving `.obj` (or `.stl` if you choose).
+---
 
-### ⚠️ Output Format Warning
-Always save your output as **`.obj`**. 
-QuadWild produces genuine quad polygons. The `.stl` file format **does not support quads** and will split them all into triangles, completely defeating the purpose of quad-remeshing. 
+## ⚙️ What happens when you hit Remesh
+The app runs through a pipeline in the background so the UI stays responsive:
+1. Converts your STL to a triangulated OBJ
+2. Runs QuadWild for cross-field calculation
+3. Runs QuadWild again for patch tracing
+4. Hands off to QuadPatches for the actual ILP-based quadrangulation
+5. Saves the result
+
+> **Save as `.obj`, not `.stl`.** The STL format doesn't support quad faces — it'll split every quad into two triangles, which completely defeats the point. The default output is `.obj` for exactly this reason.
 
 ---
 
-## 🎛️ Settings & Tips
-
-### Basic Settings
-- **Preprocess:** Decimates, triangulates, and cleans up common geometry issues before the heavy processing begins. Recommended for raw scans.
-- **Scale Factor:** Controls the target quad size. 
-  - `< 1.0` = More detail, smaller quads.
-  - `> 1.0` = Fewer, larger quads (Much faster to compute).
-- **Symmetry (X/Y/Z):** If your model is perfectly symmetric, enabling this literally halves the computational work.
-- **Detect Sharp:** Preserves hard edges based on the "Sharp Angle Threshold". Great for hard-surface models.
-
-### Advanced Settings (ILP Solver)
-The ILP (Integer Linear Programming) solver handles the most complex part of quadrangulation. 
-- **Time Limit (s):** Caps how long the solver is allowed to run. If the remesher hangs forever on complex meshes, lower this limit.
-- **ILP Method:** `LEASTSQUARES` is usually stable, but you can toggle this if the solver fails to converge.
-- **Regularity Weights:** Adjusts how much the solver prioritizes perfectly square quads versus following the geometry flow.
-
-### Handling Large Meshes
-If the app seems to freeze or takes too long to solve:
-1. Decimate your mesh to **under 100k triangles** before remeshing.
-2. Increase the **Scale Factor** to generate fewer quads.
-3. Reduce the **Time Limit** in Advanced Settings to cap the maximum time spent trying to find the perfect quad layout.
+## 🎛️ Settings worth knowing about
+- **Scale Factor** — controls how big your quads are. Below 1.0 gives you more detail and smaller quads; above 1.0 gives you bigger, coarser quads that compute much faster. If you're just testing, start with something like 1.5.
+- **Preprocess** — decimates and cleans up your mesh before processing. Leave this on if you're working with raw scans or messy geometry.
+- **Symmetry (X/Y/Z)** — if your model is actually symmetric, enabling the right axis cuts the solver work roughly in half.
+- **Detect Sharp** — preserves hard edges. Great for mechanical or hard-surface models.
+- **Time Limit (Advanced)** — the ILP solver can run a very long time on complex meshes. This caps it. If your remesh is hanging for 10+ minutes, this is the setting to lower.
 
 ---
 
-## 🤔 FAQ: Why not GPU / CUDA?
+## 🤔 If it's taking forever or freezing
+Try these in order:
+1. Decimate your mesh below 100k triangles first.
+2. Increase the Scale Factor (bigger quads = much less work for the solver).
+3. Lower the Time Limit in Advanced Settings.
 
-The ILP quadrangulation solver is fundamentally a sequential graph-optimization problem. Unlike rendering or deep learning, it **does not parallelize onto a GPU**. 
-
-The main reason for building this standalone app was that running these heavy C++ solvers inside Blender's Python environment caused memory pressure, GIL (Global Interpreter Lock) contention, and frequent crashes. Running it entirely standalone in your system Python resolves those stability issues.
+The ILP solver is fundamentally sequential — it's a graph optimization problem, not something you can throw GPU cores at. This isn't a bug, it's just the nature of the algorithm.
 
 ---
 
-## 👏 Credits & Acknowledgements
-
-All core algorithmic work and the original Blender extension were created by the original authors of **QRemeshify** (QuadWild and QuadPatches). 
-- **QRemeshify Extension:** [ksami](https://github.com/ksami)
-- **QuadWild / QuadPatches Algorithms:** The respective academic authors and researchers behind the original C++ implementations.
-
-This GUI is simply a standalone wrapper to improve stability by running the solvers in system Python instead of Blender.
+## 🔮 Future Architecture
+Future versions of ZelMesh will transition away from acting as a simple wrapper. The long-term goal is to use the core QuadWild and QuadPatches binaries as the engine for a fully separate, standalone application with its own native architecture and dedicated workflows.
