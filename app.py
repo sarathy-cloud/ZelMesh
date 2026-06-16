@@ -386,7 +386,8 @@ def run_remesh(input_stl: str, output_path: str, cfg: dict,
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
-ACCENT   = "#1f6feb"
+ACCENT   = "#9b51e0"
+HOVER_COLOR = "#8a2be2"
 BG_DARK  = "#0d1117"
 BG_MID   = "#161b22"
 BG_CARD  = "#21262d"
@@ -420,7 +421,7 @@ class ZelMeshApp(ctk.CTk):
         hdr = ctk.CTkFrame(self, fg_color=BG_MID, corner_radius=0, height=56)
         hdr.pack(fill="x")
         hdr.pack_propagate(False)
-        ctk.CTkLabel(hdr, text="  ⬡  ZelMesh",
+        ctk.CTkLabel(hdr, text="ZelMesh",
                      font=ctk.CTkFont("Segoe UI", 20, "bold"),
                      text_color="white").pack(side="left", padx=20, pady=10)
         ctk.CTkLabel(hdr, text="Standalone • No Blender required",
@@ -506,7 +507,7 @@ class ZelMeshApp(ctk.CTk):
 
         self.run_btn = ctk.CTkButton(foot, text="  ▶  Remesh",
                                      font=ctk.CTkFont("Segoe UI", 14, "bold"),
-                                     fg_color=ACCENT, hover_color="#388bfd",
+                                     fg_color=ACCENT, hover_color=HOVER_COLOR,
                                      height=36, corner_radius=8,
                                      command=self._run)
         self.run_btn.pack(side="right", padx=16, pady=4)
@@ -586,7 +587,8 @@ class ZelMeshApp(ctk.CTk):
         val_lbl.pack(side="right")
         def update(v): val_lbl.configure(text=f"{float(v):{fmt}}{unit}")
         ctk.CTkSlider(row, from_=lo, to=hi, variable=var,
-                      command=update, width=220).pack(side="right", padx=8)
+                      command=update, width=220, progress_color=ACCENT,
+                      button_color=ACCENT, button_hover_color=HOVER_COLOR).pack(side="right", padx=8)
         if tip:
             ctk.CTkLabel(row, text=tip, text_color=TEXT_DIM,
                          font=ctk.CTkFont("Segoe UI", 10)).pack(side="left", padx=6)
@@ -600,7 +602,8 @@ class ZelMeshApp(ctk.CTk):
         var = ctk.StringVar(value=default)
         ctk.CTkOptionMenu(row, values=values, variable=var,
                           width=180, fg_color=BG_MID,
-                          button_color=BG_DARK).pack(side="left", padx=8)
+                          button_color=BG_DARK,
+                          button_hover_color=HOVER_COLOR).pack(side="left", padx=8)
         return var
 
     def _int_entry(self, parent, label, default):
