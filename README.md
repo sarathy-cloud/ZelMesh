@@ -4,7 +4,7 @@
 
 # ZelMesh Standalone GUI
 
-ksami built the QRemeshify Blender extension, which wraps the QuadWild and QuadPatches algorithms from the original academic researchers into something usable inside Blender. It's genuinely good work. This app is just a wrapper around that same pipeline — the credit for anything that actually matters belongs to them.
+[ksami](https://github.com/ksami/QRemeshify) built the QRemeshify Blender extension, which wraps the QuadWild and QuadPatches algorithms from the original academic researchers into something usable inside Blender. It's genuinely good work. This app is just a wrapper around that same pipeline — the credit for anything that actually matters belongs to them.
 
 So — if you've been using that extension and Blender keeps hanging, freezing, or dying mid-remesh, that's exactly why this exists.
 
@@ -74,12 +74,6 @@ The app runs through a pipeline in the background so the UI stays responsive:
 - **Time Limit (Advanced)** — the ILP solver can run a very long time on complex meshes. This caps it. If your remesh is hanging for 10+ minutes, this is the setting to lower.
 
 ---
-
-## 🤔 If it's taking forever or freezing
-Try these in order:
-1. Decimate your mesh below 100k triangles first.
-2. Increase the Scale Factor (bigger quads = much less work for the solver).
-3. Lower the Time Limit in Advanced Settings.
 
 The ILP solver is fundamentally sequential — it's a graph optimization problem, not something you can throw GPU cores at. This isn't a bug, it's just the nature of the algorithm.
 
