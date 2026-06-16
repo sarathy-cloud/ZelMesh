@@ -401,6 +401,14 @@ class ZelMeshApp(ctk.CTk):
         self.geometry("860x800")
         self.minsize(780, 700)
         self.configure(fg_color=BG_DARK)
+        
+        icon_path = SCRIPT_DIR / "icons" / "icon.ico"
+        if icon_path.exists():
+            try:
+                self.iconbitmap(str(icon_path))
+            except Exception:
+                pass
+                
         self.input_path      = ""
         self.output_path_val = ""
         self._build_ui()
