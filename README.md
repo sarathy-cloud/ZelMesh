@@ -4,7 +4,7 @@
 
 # ZelMesh Standalone GUI
 
-ksami built the QRemeshify Blender extension, which wraps the QuadWild and QuadPatches algorithms from the original academic researchers into something usable inside Blender. It's genuinely good work. This app is just a wrapper around that same pipeline — the credit for anything that actually matters belongs to them.
+[ksami](https://github.com/ksami/QRemeshify) built the QRemeshify Blender extension, which wraps the QuadWild and QuadPatches algorithms from the original academic researchers into something usable inside Blender. It's genuinely good work. This app is just a wrapper around that same pipeline — the credit for anything that actually matters belongs to them.
 
 So — if you've been using that extension and Blender keeps hanging, freezing, or dying mid-remesh, that's exactly why this exists.
 
