@@ -388,9 +388,9 @@ ctk.set_default_color_theme("blue")
 
 ACCENT   = "#9b51e0"
 HOVER_COLOR = "#8a2be2"
-BG_DARK  = "#0d1117"
-BG_MID   = "#161b22"
-BG_CARD  = "#21262d"
+BG_DARK  = "#120d17"
+BG_MID   = "#191622"
+BG_CARD  = "#26212d"
 TEXT_DIM = "#8b949e"
 WARN     = "#e3b341"
 
