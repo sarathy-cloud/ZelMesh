@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="icons/128x128@2x.png" width="128" alt="ZelMesh Logo" />
+</p>
+
 # ZelMesh Standalone GUI
 
 ksami built the QRemeshify Blender extension, which wraps the QuadWild and QuadPatches algorithms from the original academic researchers into something usable inside Blender. It's genuinely good work. This app is just a wrapper around that same pipeline — the credit for anything that actually matters belongs to them.
